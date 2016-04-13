@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <persistence-class-name>com.breje.persistence.JDBCPersistence</persistence-class-name>
+    <url>jdbc:mysql://localhost:3306/librarydb</url>
+    <driver>com.mysql.jdbc.Driver</driver>
+    <username>libliblib</username>
+    <password>libliblib</password>
+</config>
