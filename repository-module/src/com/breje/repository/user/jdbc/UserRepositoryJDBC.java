@@ -23,17 +23,11 @@ public class UserRepositoryJDBC implements UserRepository {
 		Connection connection = JDBCUtils.getConnection();
 		User user = null;
 		try {
-			String sql = SQLUtils.LOGIN_SQL.format(new Object[] { userName, password });
-			System.out.println("Login statement " + sql);
+			String sql = SQLUtils.LOGIN_SQL
+					.format(new Object[] { SQLUtils.toQuotedString(userName), SQLUtils.toQuotedString(password) });
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			// PreparedStatement preparedStatement = connection
-			// .prepareStatement("select * from users where user_name=? and
-			// password=?");
-			// preparedStatement.setString(1, userName);
-			// preparedStatement.setString(2, password);
 			ResultSet result = preparedStatement.executeQuery();
 			if (result.next()) {
-				System.out.println("Have an user, yey");
 				user = new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));
 			}
 			System.out.println("Verify user " + userName);

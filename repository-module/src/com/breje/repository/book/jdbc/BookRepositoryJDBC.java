@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.breje.model.Book;
 import com.breje.persistence.utils.JDBCUtils;
+import com.breje.persistence.utils.SQLUtils;
 import com.breje.repository.book.BookRepository;
 
 /**
@@ -24,7 +25,8 @@ public class BookRepositoryJDBC implements BookRepository {
 		Connection connection = JDBCUtils.getConnection();
 		List<Book> availableBooks = new ArrayList<>();
 		try {
-			PreparedStatement preparedStatement = connection.prepareStatement("select * from books where available>0");
+			String sql = SQLUtils.SELECT_AVAILABLE_BOOKS_SQL.toString();
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				availableBooks
@@ -42,8 +44,7 @@ public class BookRepositoryJDBC implements BookRepository {
 		Connection connection = JDBCUtils.getConnection();
 		List<Book> usersBooks = new ArrayList<>();
 		try {
-			String sql = "select * from books b " + "inner join user_book ub on ub.book_id=b.id "
-					+ "inner join users u on u.id=ub.user_id " + "where u.id=" + userId;
+			String sql = SQLUtils.SELECT_USER_BOOKS_SQL.format(new Object[] { userId });
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
@@ -61,8 +62,8 @@ public class BookRepositoryJDBC implements BookRepository {
 		Connection connection = JDBCUtils.getConnection();
 		List<Book> foundBooks = new ArrayList<>();
 		try {
-			PreparedStatement preparedStatement = connection
-					.prepareStatement("select * from books where title like '%" + key + "%'");
+			String sql = SQLUtils.SEARCH_BOOKS_SQL.format(new Object[] { "%" + SQLUtils.toQuotedString(key) + "%" });
+			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				foundBooks.add(new Book(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
