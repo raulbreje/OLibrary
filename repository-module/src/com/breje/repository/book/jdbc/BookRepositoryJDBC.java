@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.breje.model.Book;
-import com.breje.persistence.JDBCUtils;
+import com.breje.persistence.utils.JDBCUtils;
 import com.breje.repository.book.BookRepository;
 
 /**
