@@ -25,7 +25,8 @@ public class BookRepositoryJDBC implements BookRepository {
 		Connection connection = JDBCUtils.getConnection();
 		List<Book> availableBooks = new ArrayList<>();
 		try {
-			String sql = SQLUtils.SELECT_AVAILABLE_BOOKS_SQL.toString();
+			String sql = SQLUtils.SELECT_AVAILABLE_BOOKS;
+			System.out.println("====> " + sql);
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
@@ -80,18 +81,14 @@ public class BookRepositoryJDBC implements BookRepository {
 		Connection connection = JDBCUtils.getConnection();
 		int quantity = 0;
 		try {
-			String changeQuantity = "update books set available=available-1 where id=?";
-			PreparedStatement changeQuantityStatement = connection.prepareStatement(changeQuantity);
-			changeQuantityStatement.setInt(1, bookId);
+			String changeQuantitySql = SQLUtils.DEC_AVAILABILITY_BOOK_SQL.format(new Object[] { bookId });
+			PreparedStatement changeQuantityStatement = connection.prepareStatement(changeQuantitySql);
 			changeQuantityStatement.executeUpdate();
-			String borrow = "insert into user_book values(?,?)";
-			PreparedStatement borrowStatement = connection.prepareStatement(borrow);
-			borrowStatement.setInt(1, userId);
-			borrowStatement.setInt(2, bookId);
-			borrowStatement.executeUpdate();
-			PreparedStatement availableQuantityStatement = connection
-					.prepareStatement("select available from books where id=?");
-			availableQuantityStatement.setInt(1, bookId);
+			String borrowSql = SQLUtils.INSERT_BORROW_SQL.format(new Object[] { userId, bookId });
+			PreparedStatement borrowStatement = connection.prepareStatement(borrowSql);
+			borrowStatement.executeQuery();
+			String availabilitySql = SQLUtils.GET_AVAILABILITY_OF_BOOK_SQL.format(new Object[] { bookId });
+			PreparedStatement availableQuantityStatement = connection.prepareStatement(availabilitySql);
 			ResultSet resultSet = availableQuantityStatement.executeQuery();
 			if (resultSet.next()) {
 				quantity = resultSet.getInt(1);
@@ -108,17 +105,14 @@ public class BookRepositoryJDBC implements BookRepository {
 		Connection connection = JDBCUtils.getConnection();
 		Book returned = null;
 		try {
-			String changeQuantity = "update books set available=available+1 where id=?";
-			PreparedStatement changeQuantityStatement = connection.prepareStatement(changeQuantity);
-			changeQuantityStatement.setInt(1, bookId);
+			String changeQuantitySql = SQLUtils.INC_AVAILABILITY_BOOK_SQL.format(new Object[] { bookId });
+			PreparedStatement changeQuantityStatement = connection.prepareStatement(changeQuantitySql);
 			changeQuantityStatement.executeUpdate();
-			String returnBook = "delete from user_book where book_id=? and user_id=?";
-			PreparedStatement returnStatement = connection.prepareStatement(returnBook);
-			returnStatement.setInt(1, bookId);
-			returnStatement.setInt(2, userId);
-			returnStatement.executeUpdate();
-			PreparedStatement selectReturnedBook = connection.prepareStatement("select * from books where id=?");
-			selectReturnedBook.setInt(1, bookId);
+			String returnBookSql = SQLUtils.REMOVE_BORROW_SQL.format(new Object[] { userId, bookId });
+			PreparedStatement returnStatement = connection.prepareStatement(returnBookSql);
+			returnStatement.executeQuery();
+			String returnedBookSql = SQLUtils.GET_BOOK_SQL.format(new Object[] { bookId });
+			PreparedStatement selectReturnedBook = connection.prepareStatement(returnBookSql);
 			ResultSet resultSet = selectReturnedBook.executeQuery();
 			if (resultSet.next()) {
 				returned = new Book(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),

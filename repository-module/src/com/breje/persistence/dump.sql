@@ -12,3 +12,5 @@ INSERT INTO BOOK_TBL (book_id, author, title, availability) VALUES (5, 'author 4
 INSERT INTO BOOK_TBL (book_id, author, title, availability) VALUES (6, 'author 5', 'title 6', 1);
 INSERT INTO BOOK_TBL (book_id, author, title, availability) VALUES (7, 'author 5', 'title 7', 2);
 INSERT INTO BOOK_TBL (book_id, author, title, availability) VALUES (8, 'author 6', 'title 8', 6);
+
+INSERT INTO BORROW_TBL (user_id, book_id) VALUES (1, 2);
