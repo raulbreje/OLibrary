@@ -123,4 +123,12 @@ public class UserTest {
 		}
 		assertEquals("user3", user.getFullName());
 	}
+
+	@Test
+	public void testToString() {
+		User user = new User(0, "user1", "password1", "User Name");
+		String resultString = "User [id=0, userName=user1, passwd=password1, fullName=User Name]";
+		assertEquals(resultString, user.toString());
+	}
+
 }

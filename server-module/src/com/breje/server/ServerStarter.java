@@ -21,7 +21,7 @@ import com.breje.network.utils.ServerException;
 import com.breje.services.ILibraryServer;
 import com.breje.services.impl.LibraryServerImpl;
 
-public class StartRpcServer {
+public class ServerStarter {
 	public static void main(String[] args) {
 		try {
 			Properties serverProps = new Properties(System.getProperties());
@@ -50,7 +50,7 @@ public class StartRpcServer {
 		}
 
 		ILibraryServer libraryServer = new LibraryServerImpl();
-		AbstractServer server = new LibraryRpcConcurrentServer(55555, libraryServer);
+		AbstractServer server = new LibraryRpcConcurrentServer(60000, libraryServer);
 		try {
 			server.start();
 		} catch (ServerException e) {

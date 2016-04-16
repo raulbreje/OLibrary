@@ -1,5 +1,7 @@
 package com.breje.persistence;
 
+import com.breje.common.logging.LibraryLogger;
+import com.breje.common.logging.LibraryLoggerType;
 import com.breje.repository.book.BookRepository;
 import com.breje.repository.user.UserRepository;
 
@@ -16,6 +18,7 @@ public abstract class Persistence {
 	}
 
 	public static Persistence getInstance() {
+		LibraryLogger.logMessage("getInstance() ENTER", LibraryLoggerType.DEBUG, Persistence.class);
 		if (instance == null) {
 			String repositoryName = System.getProperty("persistence-class-name");
 			try {
@@ -23,13 +26,14 @@ public abstract class Persistence {
 				if (repoClass.getSuperclass().equals(Persistence.class))
 					instance = (Persistence) repoClass.newInstance();
 			} catch (ClassNotFoundException e) {
-				System.out.println("Persistence exception: " + e);
+				LibraryLogger.logMessage(e.getStackTrace().toString(), LibraryLoggerType.ERROR, Persistence.class);
 			} catch (IllegalAccessException e) {
-				System.out.println("Persistence excep: " + e);
+				LibraryLogger.logMessage(e.getStackTrace().toString(), LibraryLoggerType.ERROR, Persistence.class);
 			} catch (InstantiationException e) {
-				System.out.println("Persistence excep: " + e);
+				LibraryLogger.logMessage(e.getStackTrace().toString(), LibraryLoggerType.ERROR, Persistence.class);
 			}
 		}
+		LibraryLogger.logMessage("getInstance() LEAVE", LibraryLoggerType.DEBUG, Persistence.class);
 		return instance;
 	}
 
