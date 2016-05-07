@@ -1,4 +1,4 @@
-package com.breje.network.utils;
+package com.breje.network.exceptions;
 
 /**
  * Created by IntelliJ IDEA. User: grigo Date: Mar 18, 2009 Time: 11:44:51 AM

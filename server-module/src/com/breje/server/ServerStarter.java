@@ -15,9 +15,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.breje.network.exceptions.ServerException;
 import com.breje.network.utils.AbstractServer;
 import com.breje.network.utils.LibraryRpcConcurrentServer;
-import com.breje.network.utils.ServerException;
 import com.breje.services.ILibraryServer;
 import com.breje.services.impl.LibraryServerImpl;
 
