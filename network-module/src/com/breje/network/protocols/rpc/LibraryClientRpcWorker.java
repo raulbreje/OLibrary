@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 
+import com.breje.common.logging.LibraryLogger;
+import com.breje.common.logging.LibraryLoggerType;
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
 import com.breje.model.User;
@@ -29,6 +31,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 	private volatile boolean connected;
 
 	public LibraryClientRpcWorker(ILibraryServer server, Socket connection) {
+		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		this.server = server;
 		this.connection = connection;
 		try {
@@ -37,11 +40,14 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 			input = new ObjectInputStream(connection.getInputStream());
 			connected = true;
 		} catch (IOException e) {
-			e.printStackTrace();
+			LibraryLogger.logMessage("Cannot connect to server/n" + e.getStackTrace(), LibraryLoggerType.DEBUG,
+					LibraryClientRpcWorker.class);
 		}
+		LibraryLogger.logMessage("contructor LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 	}
 
 	public void run() {
+		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		while (connected) {
 			try {
 				Object request = input.readObject();
@@ -67,6 +73,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		} catch (IOException e) {
 			System.out.println("Error " + e);
 		}
+		LibraryLogger.logMessage("constructor LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 	}
 
 	@Override

@@ -72,6 +72,7 @@ public class LibraryServerImpl implements ILibraryServer {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private boolean isLogged(User u) {
 		return loggedClients.get(u.getUserName()) != null;
 	}

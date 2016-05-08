@@ -30,6 +30,7 @@ public class LibraryLogger {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static void logMessage(String message, LibraryLoggerType type, Class clazz) {
 		Logger logger = Logger.getLogger(clazz.getName());
 		switch (type) {

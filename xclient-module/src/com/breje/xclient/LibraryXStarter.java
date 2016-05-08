@@ -29,11 +29,13 @@ public class LibraryXStarter extends Application {
 	String pw = "password";
 	String checkUser, checkPw;
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		launch(args);
 		ILibraryServer server = new LibraryServerRpcProxy("localhost", 60000);
 
-		//LibraryClientController libraryClientController = new LibraryClientController(server);
+		// LibraryClientController libraryClientController = new
+		// LibraryClientController(server);
 		// LoginWindow loginWindow = new LoginWindow("Library",
 		// libraryClientController);
 		// loginWindow.setSize(200, 200);
@@ -41,6 +43,7 @@ public class LibraryXStarter extends Application {
 		// loginWindow.setVisible(true);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("X | OLibrary Log In");
@@ -112,7 +115,7 @@ public class LibraryXStarter extends Application {
 
 		bp.setCenter(gridPane);
 		Scene scene = new Scene(bp);
-		//scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
+		// scene.getStylesheets().add(getClass().getClassLoader().getResource("login.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.titleProperty()
 				.bind(scene.widthProperty().asString().concat(" : ").concat(scene.heightProperty().asString()));
