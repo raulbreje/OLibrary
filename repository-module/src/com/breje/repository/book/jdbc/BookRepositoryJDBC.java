@@ -35,7 +35,7 @@ public class BookRepositoryJDBC implements BookRepository {
 						.add(new Book(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
 			}
 		} catch (SQLException e) {
-			LibraryLogger.logMessage("Error database: " + e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
 		}
 		LibraryLogger.logMessage("getAvailableBooks() LEAVE", LibraryLoggerType.DEBUG, BookRepositoryJDBC.class);
 		return availableBooks;
@@ -54,7 +54,7 @@ public class BookRepositoryJDBC implements BookRepository {
 				usersBooks.add(new Book(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
 			}
 		} catch (SQLException e) {
-			LibraryLogger.logMessage("Error database: " + e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
 		}
 		LibraryLogger.logMessage("getUserBooks() LEAVE", LibraryLoggerType.DEBUG, BookRepositoryJDBC.class);
 		return usersBooks;
@@ -67,14 +67,14 @@ public class BookRepositoryJDBC implements BookRepository {
 		List<Book> foundBooks = new ArrayList<>();
 		try {
 			String sql = SQLHelper.SEARCH_BOOKS_BY_SQL
-					.format(new Object[] { SQLHelper.BOOK_TITLE, "%" + SQLHelper.toQuotedString(key) + "%" });
+					.format(new Object[] { SQLHelper.BOOK_TITLE, SQLHelper.toQuotedString("%" + key + "%") });
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
 				foundBooks.add(new Book(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
 			}
 		} catch (SQLException e) {
-			LibraryLogger.logMessage("Error database: " + e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
 		}
 		LibraryLogger.logMessage("searchBooks() LEAVE", LibraryLoggerType.DEBUG, BookRepositoryJDBC.class);
 		return foundBooks;
@@ -91,7 +91,7 @@ public class BookRepositoryJDBC implements BookRepository {
 			changeQuantityStatement.executeUpdate();
 			String borrowSql = SQLHelper.INSERT_BORROW_SQL.format(new Object[] { userId, bookId });
 			PreparedStatement borrowStatement = connection.prepareStatement(borrowSql);
-			borrowStatement.executeQuery();
+			borrowStatement.executeUpdate();
 			String availabilitySql = SQLHelper.GET_AVAILABILITY_OF_BOOK_SQL.format(new Object[] { bookId });
 			PreparedStatement availableQuantityStatement = connection.prepareStatement(availabilitySql);
 			ResultSet resultSet = availableQuantityStatement.executeQuery();
@@ -99,7 +99,7 @@ public class BookRepositoryJDBC implements BookRepository {
 				quantity = resultSet.getInt(1);
 			}
 		} catch (SQLException e) {
-			LibraryLogger.logMessage("Error database: " + e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
 		}
 		LibraryLogger.logMessage("borrowBook() LEAVE", LibraryLoggerType.DEBUG, BookRepositoryJDBC.class);
 		return quantity;
@@ -117,7 +117,9 @@ public class BookRepositoryJDBC implements BookRepository {
 			String returnBookSql = SQLHelper.REMOVE_BORROW_SQL.format(new Object[] { userId, bookId });
 			PreparedStatement returnStatement = connection.prepareStatement(returnBookSql);
 			returnStatement.executeUpdate();
-			String returnedBookSql = SQLHelper.GET_BOOK_SQL.format(new Object[] { bookId });
+			String returnedBookSql = SQLHelper.SELECT_AVAILABLE_BOOKS;
+			// String returnedBookSql = SQLHelper.GET_BOOK_SQL.format(new
+			// Object[] { bookId });
 			PreparedStatement selectReturnedBook = connection.prepareStatement(returnedBookSql);
 			ResultSet resultSet = selectReturnedBook.executeQuery();
 			if (resultSet.next()) {
@@ -125,7 +127,7 @@ public class BookRepositoryJDBC implements BookRepository {
 						resultSet.getInt(4));
 			}
 		} catch (SQLException e) {
-			LibraryLogger.logMessage("Error database: " + e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
 		}
 		LibraryLogger.logMessage("returnBook() LEAVE", LibraryLoggerType.DEBUG, BookRepositoryJDBC.class);
 		return returned;

@@ -27,9 +27,9 @@ public class JDBCUtils {
 			Class.forName(driver);
 			con = DriverManager.getConnection(url, user, pass);
 		} catch (ClassNotFoundException e) {
-			LibraryLogger.logMessage("Error loading driver: " + e, LibraryLoggerType.ERROR, JDBCUtils.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, JDBCUtils.class);
 		} catch (SQLException e) {
-			LibraryLogger.logMessage("Error getting connection: " + e, LibraryLoggerType.ERROR, JDBCUtils.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, JDBCUtils.class);
 		}
 		LibraryLogger.logMessage("getNewConnection() LEAVE", LibraryLoggerType.DEBUG, JDBCUtils.class);
 		return con;
@@ -41,7 +41,7 @@ public class JDBCUtils {
 			if (instance == null || instance.isClosed())
 				instance = getNewConnection();
 		} catch (SQLException e) {
-			LibraryLogger.logMessage("Error database: " + e, LibraryLoggerType.ERROR, JDBCUtils.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, JDBCUtils.class);
 		}
 		LibraryLogger.logMessage("getConnection() LEAVE", LibraryLoggerType.DEBUG, JDBCUtils.class);
 		return instance;

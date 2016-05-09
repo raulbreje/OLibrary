@@ -41,17 +41,6 @@ public class SQLHelper {
 
 	public static MessageFormat GET_BOOK_SQL = new MessageFormat("SELECT * FROM BOOK_TBL WHERE book_id={0}");
 
-	@Deprecated
-	public static MessageFormat SEARCH_BOOKS_SQL = new MessageFormat("SELECT * FROM BOOK_TBL WHERE title LIKE {0}");
-
-	@Deprecated
-	public static MessageFormat DEC_AVAILABILITY_BOOK_SQL = new MessageFormat(
-			"UPDATE BOOK_TBL SET availability = availability-1 WHERE book_id={0}");
-
-	@Deprecated
-	public static MessageFormat INC_AVAILABILITY_BOOK_SQL = new MessageFormat(
-			"UPDATE BOOK_TBL SET availability = availability+1 WHERE book_id={0}");
-
 	public static String toQuotedString(String target) {
 		StringJoiner sj = new StringJoiner("", "'", "'");
 		return sj.add(target).toString();

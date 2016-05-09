@@ -26,11 +26,11 @@ public abstract class Persistence {
 				if (repoClass.getSuperclass().equals(Persistence.class))
 					instance = (Persistence) repoClass.newInstance();
 			} catch (ClassNotFoundException e) {
-				LibraryLogger.logMessage(e.getStackTrace().toString(), LibraryLoggerType.ERROR, Persistence.class);
+				LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, Persistence.class);
 			} catch (IllegalAccessException e) {
-				LibraryLogger.logMessage(e.getStackTrace().toString(), LibraryLoggerType.ERROR, Persistence.class);
+				LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, Persistence.class);
 			} catch (InstantiationException e) {
-				LibraryLogger.logMessage(e.getStackTrace().toString(), LibraryLoggerType.ERROR, Persistence.class);
+				LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, Persistence.class);
 			}
 		}
 		LibraryLogger.logMessage("getInstance() LEAVE", LibraryLoggerType.DEBUG, Persistence.class);

@@ -35,7 +35,7 @@ public class UserRepositoryJDBC implements UserRepository {
 			LibraryLogger.logMessage("Verify user: " + userName, LibraryLoggerType.INFO, UserRepositoryJDBC.class);
 			return user;
 		} catch (SQLException e) {
-			LibraryLogger.logMessage("Error database: " + e, LibraryLoggerType.ERROR, UserRepositoryJDBC.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, UserRepositoryJDBC.class);
 		}
 		LibraryLogger.logMessage("borrowBook() LEAVE", LibraryLoggerType.DEBUG, UserRepositoryJDBC.class);
 		return user;
