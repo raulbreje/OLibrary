@@ -11,10 +11,12 @@ import com.breje.common.logging.LibraryLoggerType;
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
 import com.breje.model.User;
-import com.breje.network.dto.BookDTO;
-import com.breje.network.dto.BookQuantityDTO;
-import com.breje.network.dto.UserBookDTO;
-import com.breje.network.dto.UserDTO;
+import com.breje.network.dto.IBookDTO;
+import com.breje.network.dto.IBookQuantityDTO;
+import com.breje.network.dto.IUserBookDTO;
+import com.breje.network.dto.IUserDTO;
+import com.breje.network.dto.impl.BookDTO;
+import com.breje.network.dto.impl.BookQuantityDTO;
 import com.breje.services.ILibraryClient;
 import com.breje.services.ILibraryServer;
 
@@ -31,7 +33,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 	private volatile boolean connected;
 
 	public LibraryClientRpcWorker(ILibraryServer server, Socket connection) {
-		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
+		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		this.server = server;
 		this.connection = connection;
 		try {
@@ -39,31 +41,34 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 			output.flush();
 			input = new ObjectInputStream(connection.getInputStream());
 			connected = true;
-		} catch (IOException e) {
-			LibraryLogger.logMessage("Cannot connect to server/n" + e.getStackTrace(), LibraryLoggerType.DEBUG,
+			LibraryLogger.logMessage("Connection has been estabilished with the server.", LibraryLoggerType.INFO,
 					LibraryClientRpcWorker.class);
+		} catch (IOException e) {
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
 		}
-		LibraryLogger.logMessage("contructor LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
+		LibraryLogger.logMessage("contructor LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 	}
 
 	public void run() {
-		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
+		LibraryLogger.logMessage("run() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		while (connected) {
 			try {
 				Object request = input.readObject();
+				LibraryLogger.logMessage("Request has been received.\n" + request, LibraryLoggerType.ERROR,
+						LibraryClientRpcWorker.class);
 				Response response = handleRequest((Request) request);
 				if (response != null) {
 					sendResponse(response);
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
 			}
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
 			}
 		}
 		try {
@@ -71,38 +76,44 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 			output.close();
 			connection.close();
 		} catch (IOException e) {
-			System.out.println("Error " + e);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
 		}
-		LibraryLogger.logMessage("constructor LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
+		LibraryLogger.logMessage("run() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 	}
 
 	@Override
 	public void bookUpdated(int bookId, int newQuantity) throws LibraryException {
-		BookQuantityDTO bookQuantityDTO = new BookQuantityDTO(bookId, newQuantity);
+		LibraryLogger.logMessage("bookUpdated() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
+		IBookQuantityDTO bookQuantityDTO = new BookQuantityDTO(bookId, newQuantity);
 		Response response = new Response.Builder().type(ResponseType.BORROW_BOOK).data(bookQuantityDTO).build();
 		try {
 			sendResponse(response);
 		} catch (IOException e) {
-			throw new LibraryException("Sending error: " + e);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
+			throw new LibraryException("Error occurs when trying to send response. Contact your administrator.");
 		}
+		LibraryLogger.logMessage("bookUpdated() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 	}
 
 	@Override
 	public void bookReturned(int bookId, String author, String title) throws LibraryException {
-		BookDTO bookDTO = new BookDTO(bookId, author, title);
+		LibraryLogger.logMessage("bookReturned() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
+		IBookDTO bookDTO = new BookDTO(bookId, author, title);
 		Response response = new Response.Builder().type(ResponseType.RETURN_BOOK).data(bookDTO).build();
 		try {
 			sendResponse(response);
 		} catch (IOException e) {
-			throw new LibraryException("Sending error: " + e);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
+			throw new LibraryException("Error occurs when trying to send response. Contact your administrator.");
 		}
+		LibraryLogger.logMessage("bookReturned() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 	}
 
 	private Response handleRequest(Request request) {
 		Response response = null;
 		if (request.type() == RequestType.LOGIN) {
 			System.out.println("Login request ...");
-			UserDTO userDTO = (UserDTO) request.data();
+			IUserDTO userDTO = (IUserDTO) request.data();
 			try {
 				User user = server.login(userDTO.getUserName(), userDTO.getPassword(), this);
 				return new Response.Builder().type(ResponseType.OK).data(user).build();
@@ -150,7 +161,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		}
 		if (request.type() == RequestType.BORROW_BOOK) {
 			try {
-				UserBookDTO userBookDTO = (UserBookDTO) request.data();
+				IUserBookDTO userBookDTO = (IUserBookDTO) request.data();
 				server.borrowBook(userBookDTO.getUserId(), userBookDTO.getBookId());
 				return new Response.Builder().type(ResponseType.OK).build();
 			} catch (LibraryException e) {
@@ -159,7 +170,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		}
 		if (request.type() == RequestType.RETURN_BOOK) {
 			try {
-				UserBookDTO userBookDTO = (UserBookDTO) request.data();
+				IUserBookDTO userBookDTO = (IUserBookDTO) request.data();
 				server.returnBook(userBookDTO.getUserId(), userBookDTO.getBookId());
 				return new Response.Builder().type(ResponseType.OK).build();
 			} catch (LibraryException e) {
@@ -170,9 +181,11 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 	}
 
 	private void sendResponse(Response response) throws IOException {
-		System.out.println("sending response " + response);
+		LibraryLogger.logMessage("Sending response...", LibraryLoggerType.INFO, LibraryClientRpcWorker.class);
 		output.writeObject(response);
 		output.flush();
+		LibraryLogger.logMessage("Response has been sent.\n" + response, LibraryLoggerType.INFO,
+				LibraryClientRpcWorker.class);
 	}
 
 }

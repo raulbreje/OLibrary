@@ -54,4 +54,28 @@ public class LibraryLogger {
 			break;
 		}
 	}
+	
+	public static void logMessage(Throwable message, LibraryLoggerType type, Class clazz) {
+		Logger logger = Logger.getLogger(clazz.getName());
+		switch (type) {
+		case INFO:
+			logger.info(message);
+			break;
+		case DEBUG:
+			logger.debug(message);
+			break;
+		case WARN:
+			logger.warn(message);
+			break;
+		case ERROR:
+			logger.error(message);
+			break;
+		case FATAL:
+			logger.fatal(message);
+			break;
+		default:
+			logger.warn("Unexpected logging type");
+			break;
+		}
+	}
 }

@@ -13,10 +13,12 @@ import com.breje.common.logging.LibraryLoggerType;
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
 import com.breje.model.User;
-import com.breje.network.dto.BookDTO;
-import com.breje.network.dto.BookQuantityDTO;
-import com.breje.network.dto.UserBookDTO;
-import com.breje.network.dto.UserDTO;
+import com.breje.network.dto.IBookDTO;
+import com.breje.network.dto.IBookQuantityDTO;
+import com.breje.network.dto.IUserBookDTO;
+import com.breje.network.dto.IUserDTO;
+import com.breje.network.dto.impl.UserBookDTO;
+import com.breje.network.dto.impl.UserDTO;
 import com.breje.services.ILibraryClient;
 import com.breje.services.ILibraryServer;
 
@@ -45,7 +47,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 	public User login(String userName, String password, ILibraryClient client) throws LibraryException {
 		LibraryLogger.logMessage("login() ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		initializeConnection();
-		UserDTO userDTO = new UserDTO(userName, password);
+		IUserDTO userDTO = new UserDTO(userName, password);
 		Request request = new Request.Builder().type(RequestType.LOGIN).data(userDTO).build();
 		sendRequest(request);
 		Response response = readResponse();
@@ -127,7 +129,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 	@Override
 	public void borrowBook(int userId, int bookId) throws LibraryException {
 		LibraryLogger.logMessage("borrowBook() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
-		UserBookDTO userBookDTO = new UserBookDTO(userId, bookId);
+		IUserBookDTO userBookDTO = new UserBookDTO(userId, bookId);
 		Request request = new Request.Builder().type(RequestType.BORROW_BOOK).data(userBookDTO).build();
 		sendRequest(request);
 		Response response = readResponse();
@@ -141,7 +143,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 	@Override
 	public void returnBook(int userId, int bookId) throws LibraryException {
 		LibraryLogger.logMessage("returnBook() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
-		UserBookDTO userBookDTO = new UserBookDTO(userId, bookId);
+		IUserBookDTO userBookDTO = new UserBookDTO(userId, bookId);
 		Request request = new Request.Builder().type(RequestType.RETURN_BOOK).data(userBookDTO).build();
 		sendRequest(request);
 		Response response = readResponse();
@@ -160,9 +162,10 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 			output.close();
 			connection.close();
 			client = null;
-		} catch (IOException e) {
-			LibraryLogger.logMessage("Closing connection error." + e.getStackTrace(), LibraryLoggerType.ERROR,
+			LibraryLogger.logMessage("Connection has been closed with success.", LibraryLoggerType.INFO,
 					LibraryServerRpcProxy.class);
+		} catch (IOException e) {
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryServerRpcProxy.class);
 		}
 		LibraryLogger.logMessage("closeConnection() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 	}
@@ -173,8 +176,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 			output.writeObject(request);
 			output.flush();
 		} catch (IOException e) {
-			LibraryLogger.logMessage("Sending object error.\n" + e.getStackTrace(), LibraryLoggerType.ERROR,
-					LibraryServerRpcProxy.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryServerRpcProxy.class);
 			throw new LibraryException("Error when try to send the request. Contact your administator.");
 		}
 		LibraryLogger.logMessage("sendRequest() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
@@ -186,8 +188,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		try {
 			response = qresponses.take();
 		} catch (InterruptedException e) {
-			LibraryLogger.logMessage("Interferation.\n" + e.getStackTrace(), LibraryLoggerType.ERROR,
-					LibraryServerRpcProxy.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryServerRpcProxy.class);
 			throw new LibraryException("Error occurs when try to read the response. Contact your administrator.");
 		}
 		LibraryLogger.logMessage("readResponse() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
@@ -202,10 +203,11 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 			output.flush();
 			input = new ObjectInputStream(connection.getInputStream());
 			finished = false;
+			LibraryLogger.logMessage("Connection has been initialized with success.", LibraryLoggerType.INFO,
+					LibraryServerRpcProxy.class);
 			startReader();
 		} catch (IOException e) {
-			LibraryLogger.logMessage("Initialization of connection failed\n" + e.getStackTrace(),
-					LibraryLoggerType.ERROR, LibraryServerRpcProxy.class);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryServerRpcProxy.class);
 			throw new LibraryException(
 					"Cannot estabilish the connection. Try again and if the error occurs repeateadly contact your administrator.");
 		}
@@ -223,18 +225,18 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		LibraryLogger.logMessage("handleUpdate() ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		if (response.type() == ResponseType.BORROW_BOOK) {
 			try {
-				BookQuantityDTO bookQuantityDTO = (BookQuantityDTO) response.data();
+				IBookQuantityDTO bookQuantityDTO = (IBookQuantityDTO) response.data();
 				client.bookUpdated(bookQuantityDTO.getBookId(), bookQuantityDTO.getNewQuantity());
-			} catch (LibraryException exception) {
-
+			} catch (LibraryException e) {
+				LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryServerRpcProxy.class);
 			}
 		}
 		if (response.type() == ResponseType.RETURN_BOOK) {
 			try {
-				BookDTO bookDTO = (BookDTO) response.data();
+				IBookDTO bookDTO = (IBookDTO) response.data();
 				client.bookReturned(bookDTO.getId(), bookDTO.getAuthor(), bookDTO.getTitle());
-			} catch (LibraryException exception) {
-
+			} catch (LibraryException e) {
+				LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryServerRpcProxy.class);
 			}
 		}
 		LibraryLogger.logMessage("handleUpdate() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
@@ -252,23 +254,21 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 			while (!finished) {
 				try {
 					Object response = input.readObject();
-					System.out.println("response received " + response);
+					LibraryLogger.logMessage("The server received a response:\n" + response, LibraryLoggerType.INFO,
+							ReaderThread.class);
 					if (isUpdate((Response) response)) {
 						handleUpdate((Response) response);
 					} else {
 						try {
 							qresponses.put((Response) response);
 						} catch (InterruptedException e) {
-							LibraryLogger.logMessage("Interferation.\n" + e.getStackTrace(), LibraryLoggerType.ERROR,
-									ReaderThread.class);
+							LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, ReaderThread.class);
 						}
 					}
 				} catch (IOException e) {
-					LibraryLogger.logMessage("Error occurs.\n" + e.getStackTrace(), LibraryLoggerType.ERROR,
-							ReaderThread.class);
+					LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, ReaderThread.class);
 				} catch (ClassNotFoundException e) {
-					LibraryLogger.logMessage("Error occurs.\n" + e.getStackTrace(), LibraryLoggerType.ERROR,
-							ReaderThread.class);
+					LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, ReaderThread.class);
 				}
 			}
 			LibraryLogger.logMessage("run() LEAVE", LibraryLoggerType.DEBUG, ReaderThread.class);
