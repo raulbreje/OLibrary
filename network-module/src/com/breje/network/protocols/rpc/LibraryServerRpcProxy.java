@@ -60,7 +60,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		if (user != null && response.type() == ResponseType.OK) {
 			this.client = client;
 		}
-		LibraryLogger.logMessage("login LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
+		LibraryLogger.logMessage("login() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		return user;
 	}
 

@@ -54,7 +54,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		while (connected) {
 			try {
 				Object request = input.readObject();
-				LibraryLogger.logMessage("Request has been received.\n" + request, LibraryLoggerType.ERROR,
+				LibraryLogger.logMessage("Request has been received.\n" + request, LibraryLoggerType.INFO,
 						LibraryClientRpcWorker.class);
 				Response response = handleRequest((Request) request);
 				if (response != null) {
@@ -97,7 +97,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 
 	@Override
 	public void bookReturned(int bookId, String author, String title) throws LibraryException {
-		LibraryLogger.logMessage("bookReturned() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
+		LibraryLogger.logMessage("bookReturned() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		IBookDTO bookDTO = new BookDTO(bookId, author, title);
 		Response response = new Response.Builder().type(ResponseType.RETURN_BOOK).data(bookDTO).build();
 		try {
@@ -110,9 +110,11 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 	}
 
 	private Response handleRequest(Request request) {
+		LibraryLogger.logMessage("handleRequest() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		Response response = null;
 		if (request.type() == RequestType.LOGIN) {
-			System.out.println("Login request ...");
+			LibraryLogger.logMessage("Receiving login request...", LibraryLoggerType.INFO,
+					LibraryClientRpcWorker.class);
 			IUserDTO userDTO = (IUserDTO) request.data();
 			try {
 				User user = server.login(userDTO.getUserName(), userDTO.getPassword(), this);
@@ -123,7 +125,8 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 			}
 		}
 		if (request.type() == RequestType.LOGOUT) {
-			System.out.println("Logout request");
+			LibraryLogger.logMessage("Receiving logout request...", LibraryLoggerType.INFO,
+					LibraryClientRpcWorker.class);
 			int userId = (int) request.data();
 			try {
 				server.logout(userId, this);
@@ -177,15 +180,18 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 				return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
 			}
 		}
+		LibraryLogger.logMessage("handleRequest() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		return response;
 	}
 
 	private void sendResponse(Response response) throws IOException {
+		LibraryLogger.logMessage("sendResponse() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		LibraryLogger.logMessage("Sending response...", LibraryLoggerType.INFO, LibraryClientRpcWorker.class);
 		output.writeObject(response);
 		output.flush();
 		LibraryLogger.logMessage("Response has been sent.\n" + response, LibraryLoggerType.INFO,
 				LibraryClientRpcWorker.class);
+		LibraryLogger.logMessage("sendResponse() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 	}
 
 }
