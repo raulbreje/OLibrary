@@ -5,8 +5,8 @@ import java.util.List;
 import javax.swing.table.TableModel;
 
 import com.breje.exceptions.LibraryException;
-import com.breje.model.Book;
 import com.breje.model.User;
+import com.breje.model.impl.BookImpl;
 import com.breje.services.ILibraryClient;
 import com.breje.services.ILibraryServer;
 
@@ -27,7 +27,7 @@ public class LibraryClientController implements ILibraryClient {
 		User user = libraryServer.login(userName, password, this);
 		this.user = user;
 		loadAvailableBooks();
-		List<Book> userBooks = libraryServer.getUserBooks(user.getId());
+		List<BookImpl> userBooks = libraryServer.getUserBooks(user.getId());
 		yourBooksTableModel.setBooks(userBooks);
 	}
 
@@ -44,7 +44,7 @@ public class LibraryClientController implements ILibraryClient {
 	}
 
 	public void loadAvailableBooks() throws LibraryException {
-		List<Book> availableBooks = libraryServer.getAvailableBooks();
+		List<BookImpl> availableBooks = libraryServer.getAvailableBooks();
 		availableBooksTableModel.setBooks(availableBooks);
 	}
 
@@ -61,7 +61,7 @@ public class LibraryClientController implements ILibraryClient {
 	}
 
 	public void searchBooks(String key) throws LibraryException {
-		List<Book> foundBooks = libraryServer.searchBooks(key);
+		List<BookImpl> foundBooks = libraryServer.searchBooks(key);
 		availableBooksTableModel.setBooks(foundBooks);
 	}
 
@@ -77,9 +77,9 @@ public class LibraryClientController implements ILibraryClient {
 
 	@Override
 	public void bookReturned(int bookId, String author, String title) throws LibraryException {
-		Book returnedBook = availableBooksTableModel.getById(bookId);
+		BookImpl returnedBook = availableBooksTableModel.getById(bookId);
 		if (returnedBook == null) {
-			returnedBook = new Book(bookId, author, title, 1);
+			returnedBook = new BookImpl(bookId, author, title, 1);
 			availableBooksTableModel.addBook(returnedBook);
 		} else {
 			returnedBook.setAvailable(returnedBook.getAvailable() + 1);

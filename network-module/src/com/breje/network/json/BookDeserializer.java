@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.model.Book;
+import com.breje.model.impl.BookImpl;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -22,7 +23,6 @@ public class BookDeserializer implements JsonDeserializer<Book> {
 		String title = jsonObject.get("title").getAsString();
 		int available = jsonObject.get("available").getAsInt();
 		LibraryLogger.logMessage("deserialize() LEAVE", LibraryLoggerType.DEBUG, BookDeserializer.class);
-		return new Book(bookId, author, title, available);
+		return new BookImpl(bookId, author, title, available);
 	}
-
 }

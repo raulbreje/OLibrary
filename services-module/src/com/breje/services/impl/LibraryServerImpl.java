@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
 import com.breje.model.User;
+import com.breje.model.impl.BookImpl;
 import com.breje.persistence.Persistence;
 import com.breje.repository.book.BookRepository;
 import com.breje.repository.user.UserRepository;

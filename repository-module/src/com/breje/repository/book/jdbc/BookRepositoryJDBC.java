@@ -10,6 +10,7 @@ import java.util.List;
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.model.Book;
+import com.breje.model.impl.BookImpl;
 import com.breje.persistence.utils.JDBCUtils;
 import com.breje.persistence.utils.SQLHelper;
 import com.breje.repository.book.BookRepository;

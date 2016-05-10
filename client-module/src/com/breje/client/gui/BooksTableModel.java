@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import com.breje.model.Book;
+import com.breje.model.impl.BookImpl;
 
 public class BooksTableModel extends AbstractTableModel {
 

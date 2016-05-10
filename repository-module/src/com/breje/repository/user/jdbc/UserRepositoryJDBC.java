@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.model.User;
+import com.breje.model.impl.UserImpl;
 import com.breje.persistence.utils.JDBCUtils;
 import com.breje.persistence.utils.SQLHelper;
 import com.breje.repository.user.UserRepository;
@@ -30,7 +31,7 @@ public class UserRepositoryJDBC implements UserRepository {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			if (result.next()) {
-				user = new User(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));
+				user = new UserImpl(result.getInt(1), result.getString(2), result.getString(3), result.getString(4));
 			}
 			LibraryLogger.logMessage("Verify user: " + userName, LibraryLoggerType.INFO, UserRepositoryJDBC.class);
 			return user;

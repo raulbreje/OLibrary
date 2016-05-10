@@ -2,87 +2,24 @@ package com.breje.model;
 
 import java.io.Serializable;
 
-import com.breje.common.logging.LibraryLogger;
-import com.breje.common.logging.LibraryLoggerType;
+public interface Book extends Serializable {
 
-/**
- * 
- * @author Raul Breje
- * 
- */
-public class Book implements Serializable {
+	String getAuthor();
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8555840175159679233L;
-	private String author = null;
-	private String title = null;
-	private int id = -1;
-	private int available = -1;
+	void setAuthor(String author);
 
-	public Book(int id, String author, String title, int available) {
-		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, Book.class);
-		this.id = id;
-		this.author = author;
-		this.title = title;
-		this.available = available;
-		LibraryLogger.logMessage("constructor LEAVE", LibraryLoggerType.DEBUG, Book.class);
-	}
+	String getTitle();
 
-	public String getAuthor() {
-		LibraryLogger.logMessage("getAuthor() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		LibraryLogger.logMessage("getAuthor() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-		return author;
-	}
+	void setTitle(String title);
 
-	public void setAuthor(String author) {
-		LibraryLogger.logMessage("setAuthor() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		this.author = author;
-		LibraryLogger.logMessage("setAuthor() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-	}
+	int getId();
 
-	public String getTitle() {
-		LibraryLogger.logMessage("getTitle() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		LibraryLogger.logMessage("getTitle() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-		return title;
-	}
+	void setId(int id);
 
-	public void setTitle(String title) {
-		LibraryLogger.logMessage("setTitle() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		this.title = title;
-		LibraryLogger.logMessage("setTitle() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-	}
+	int getAvailable();
 
-	public int getId() {
-		LibraryLogger.logMessage("getId() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		LibraryLogger.logMessage("getId() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-		return id;
-	}
+	void setAvailable(int available);
 
-	public void setId(int id) {
-		LibraryLogger.logMessage("setId() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		this.id = id;
-		LibraryLogger.logMessage("setId() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-	}
-
-	public int getAvailable() {
-		LibraryLogger.logMessage("getAvailable() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		LibraryLogger.logMessage("getAvailable() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-		return available;
-	}
-
-	public void setAvailable(int available) {
-		LibraryLogger.logMessage("setAvailable() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		this.available = available;
-		LibraryLogger.logMessage("setAvailable() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-	}
-
-	@Override
-	public String toString() {
-		LibraryLogger.logMessage("toString() ENTER", LibraryLoggerType.DEBUG, Book.class);
-		LibraryLogger.logMessage("toString() LEAVE", LibraryLoggerType.DEBUG, Book.class);
-		return "Book [author=" + author + ", title=" + title + ", id=" + id + ", available=" + available + "]";
-	}
+	String toString();
 
 }

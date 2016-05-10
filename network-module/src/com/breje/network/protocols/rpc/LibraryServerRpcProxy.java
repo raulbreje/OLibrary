@@ -11,8 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.exceptions.LibraryException;
-import com.breje.model.Book;
 import com.breje.model.User;
+import com.breje.model.impl.BookImpl;
 import com.breje.network.dto.IBookDTO;
 import com.breje.network.dto.IBookQuantityDTO;
 import com.breje.network.dto.IUserBookDTO;
@@ -79,7 +79,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Book> getAvailableBooks() throws LibraryException {
+	public List<BookImpl> getAvailableBooks() throws LibraryException {
 		LibraryLogger.logMessage("getAvailableBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		Request request = new Request.Builder().type(RequestType.GET_AVAILABLE_BOOKS).build();
 		sendRequest(request);
@@ -89,14 +89,14 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 			closeConnection();
 			throw new LibraryException(errorMessage);
 		}
-		List<Book> allBooks = (List<Book>) response.data();
+		List<BookImpl> allBooks = (List<BookImpl>) response.data();
 		LibraryLogger.logMessage("getAvailableBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		return allBooks;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Book> getUserBooks(int userId) throws LibraryException {
+	public List<BookImpl> getUserBooks(int userId) throws LibraryException {
 		LibraryLogger.logMessage("getUserBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		Request request = new Request.Builder().type(RequestType.GET_USER_BOOKS).data(userId).build();
 		sendRequest(request);
@@ -107,12 +107,12 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 			throw new LibraryException(errorMessage);
 		}
 		LibraryLogger.logMessage("getUserBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
-		return (List<Book>) response.data();
+		return (List<BookImpl>) response.data();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Book> searchBooks(String key) throws LibraryException {
+	public List<BookImpl> searchBooks(String key) throws LibraryException {
 		LibraryLogger.logMessage("searchBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		Request request = new Request.Builder().type(RequestType.SEARCH_BOOKS).data(key).build();
 		sendRequest(request);
@@ -123,7 +123,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 			throw new LibraryException(errorMessage);
 		}
 		LibraryLogger.logMessage("searchBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
-		return (List<Book>) response.data();
+		return (List<BookImpl>) response.data();
 	}
 
 	@Override

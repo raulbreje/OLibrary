@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.model.User;
+import com.breje.model.impl.UserImpl;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -22,7 +23,7 @@ public class UserDeserializer implements JsonDeserializer<User> {
 		String password = jsonObject.get("password").getAsString();
 		String fullName = jsonObject.get("fullName").getAsString();
 		LibraryLogger.logMessage("deserialize() LEAVE", LibraryLoggerType.DEBUG, UserDeserializer.class);
-		return new User(userId, userName, password, fullName);
+		return new UserImpl(userId, userName, password, fullName);
 	}
 
 }

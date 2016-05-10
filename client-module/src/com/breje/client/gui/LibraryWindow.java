@@ -18,6 +18,7 @@ import javax.swing.JTable;
 
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
+import com.breje.model.impl.BookImpl;
 
 public class LibraryWindow extends JFrame {
 

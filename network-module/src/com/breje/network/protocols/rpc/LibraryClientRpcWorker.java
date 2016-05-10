@@ -9,8 +9,8 @@ import java.util.List;
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.exceptions.LibraryException;
-import com.breje.model.Book;
 import com.breje.model.User;
+import com.breje.model.impl.BookImpl;
 import com.breje.network.dto.IBookDTO;
 import com.breje.network.dto.IBookQuantityDTO;
 import com.breje.network.dto.IUserBookDTO;
@@ -138,7 +138,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		}
 		if (request.type() == RequestType.GET_AVAILABLE_BOOKS) {
 			try {
-				List<Book> allBooks = server.getAvailableBooks();
+				List<BookImpl> allBooks = server.getAvailableBooks();
 				return new Response.Builder().type(ResponseType.GET_AVAILABLE_BOOKS).data(allBooks).build();
 			} catch (LibraryException e) {
 				return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
@@ -147,7 +147,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		if (request.type() == RequestType.GET_USER_BOOKS) {
 			try {
 				int userId = (int) request.data();
-				List<Book> userBooks = server.getUserBooks(userId);
+				List<BookImpl> userBooks = server.getUserBooks(userId);
 				return new Response.Builder().type(ResponseType.GET_USER_BOOKS).data(userBooks).build();
 			} catch (LibraryException e) {
 				return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
@@ -156,7 +156,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		if (request.type() == RequestType.SEARCH_BOOKS) {
 			try {
 				String key = (String) request.data();
-				List<Book> foundBooks = server.searchBooks(key);
+				List<BookImpl> foundBooks = server.searchBooks(key);
 				return new Response.Builder().type(ResponseType.GET_USER_BOOKS).data(foundBooks).build();
 			} catch (LibraryException e) {
 				return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
