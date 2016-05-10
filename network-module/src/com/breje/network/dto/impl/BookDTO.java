@@ -11,6 +11,7 @@ import com.breje.network.dto.IBookDTO;
  * @author Raul Breje
  *
  */
+@Deprecated
 public class BookDTO implements Serializable, IBookDTO {
 	/**
 	 * 

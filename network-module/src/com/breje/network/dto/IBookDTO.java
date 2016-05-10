@@ -1,5 +1,6 @@
 package com.breje.network.dto;
 
+@Deprecated
 public interface IBookDTO {
 	int getId();
 

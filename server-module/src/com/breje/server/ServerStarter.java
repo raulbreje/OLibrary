@@ -25,7 +25,6 @@ public class ServerStarter {
 	public static void main(String[] args) {
 		try {
 			Properties serverProps = new Properties(System.getProperties());
-
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			InputStream inputStream = new FileInputStream("./resources/config.xml");
@@ -43,12 +42,10 @@ public class ServerStarter {
 					serverProps.setProperty(tagName, tagValue);
 				}
 			}
-
 			System.setProperties(serverProps);
 		} catch (ParserConfigurationException | IOException | SAXException e) {
 			e.printStackTrace();
 		}
-
 		ILibraryServer libraryServer = new LibraryServerImpl();
 		AbstractServer server = new LibraryRpcConcurrentServer(60000, libraryServer);
 		try {
