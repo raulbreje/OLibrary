@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
 import com.breje.model.User;
-import com.breje.model.impl.BookImpl;
 import com.breje.persistence.Persistence;
 import com.breje.repository.book.BookRepository;
 import com.breje.repository.user.UserRepository;
@@ -28,9 +27,9 @@ public class LibraryServerImpl implements ILibraryServer {
 	public synchronized User login(String userName, String password, ILibraryClient client) throws LibraryException {
 		User user = userRepository.verifyUser(userName, password);
 		if (user != null) {
-			if (loggedClients.get(user.getId()) != null)
+			if (loggedClients.get(user.getUserId()) != null)
 				throw new LibraryException("User already logged in.");
-			loggedClients.put(user.getId(), client);
+			loggedClients.put(user.getUserId(), client);
 		} else
 			throw new LibraryException("Authentication failed.");
 		return user;
@@ -60,18 +59,47 @@ public class LibraryServerImpl implements ILibraryServer {
 	@Override
 	public void borrowBook(int userId, int bookId) throws LibraryException {
 		int newQuantity = bookRepository.borrowBook(userId, bookId);
-		for (ILibraryClient libraryClient : loggedClients.values()) {
-			libraryClient.bookUpdated(bookId, newQuantity);
+		for (int keyUserId : loggedClients.keySet()) {
+			if (keyUserId != userId) {
+				loggedClients.get(keyUserId).bookBorrowed(bookId, newQuantity, false);
+			} else {
+				loggedClients.get(keyUserId).bookBorrowed(bookId, newQuantity, true);
+			}
+
 		}
 	}
 
 	@Override
 	public void returnBook(int userId, int bookId) throws LibraryException {
 		Book returned = bookRepository.returnBook(userId, bookId);
-		for (ILibraryClient libraryClient : loggedClients.values()) {
-			libraryClient.bookReturned(returned.getId(), returned.getAuthor(), returned.getTitle());
+		for (int keyUserId : loggedClients.keySet()) {
+			if (keyUserId != userId) {
+				loggedClients.get(keyUserId).bookReturned(returned.getBookId(), returned.getAuthor(),
+						returned.getTitle(), false);
+			} else {
+				loggedClients.get(keyUserId).bookReturned(returned.getBookId(), returned.getAuthor(),
+						returned.getTitle(), true);
+			}
 		}
 	}
+
+	//
+	// @Override
+	// public void borrowBook(int userId, int bookId) throws LibraryException {
+	// int newQuantity = bookRepository.borrowBook(userId, bookId);
+	// for (ILibraryClient libraryClient : loggedClients.values()) {
+	// libraryClient.bookUpdated(bookId, newQuantity);
+	// }
+	// }
+	//
+	// @Override
+	// public void returnBook(int userId, int bookId) throws LibraryException {
+	// Book returned = bookRepository.returnBook(userId, bookId);
+	// for (ILibraryClient libraryClient : loggedClients.values()) {
+	// libraryClient.bookReturned(returned.getBookId(), returned.getAuthor(),
+	// returned.getTitle());
+	// }
+	// }
 
 	@SuppressWarnings("unused")
 	private boolean isLogged(User u) {

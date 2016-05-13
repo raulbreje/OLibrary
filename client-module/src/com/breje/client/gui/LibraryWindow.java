@@ -18,7 +18,6 @@ import javax.swing.JTable;
 
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
-import com.breje.model.impl.BookImpl;
 
 public class LibraryWindow extends JFrame {
 
@@ -108,15 +107,12 @@ public class LibraryWindow extends JFrame {
 						BooksTableModel availableBooksTableModel = (BooksTableModel) availableBooks.getModel();
 						Book selectedBook = availableBooksTableModel.get(availableBooks.convertRowIndexToModel(row));
 						BooksTableModel yourBooksTableModel = (BooksTableModel) yourBooks.getModel();
-						if (yourBooksTableModel.getById(selectedBook.getId()) != null) {
+						if (yourBooksTableModel.getBookById(selectedBook.getBookId()) != null) {
 							JOptionPane.showMessageDialog(LibraryWindow.this, "You already have this book!", "ERROR",
 									JOptionPane.ERROR_MESSAGE);
 						} else {
-							selectedBook.setAvailable(selectedBook.getAvailable() - 1);
 							try {
-								libraryClientController.borrowBook(selectedBook.getId());
-								BooksTableModel yoursBooksTableModel = (BooksTableModel) yourBooks.getModel();
-								yoursBooksTableModel.addBook(selectedBook);
+								libraryClientController.borrowBook(selectedBook.getBookId());
 								clearSearch();
 							} catch (LibraryException exception) {
 								JOptionPane.showMessageDialog(LibraryWindow.this, exception.getMessage(), "ERROR",
@@ -152,9 +148,9 @@ public class LibraryWindow extends JFrame {
 					BooksTableModel yourBooksTableModel = (BooksTableModel) yourBooks.getModel();
 					Book selectedBook = yourBooksTableModel.get(yourBooks.convertRowIndexToModel(row));
 					try {
-						libraryClientController.returnBook(selectedBook.getId());
+						libraryClientController.returnBook(selectedBook.getBookId());
 						BooksTableModel yoursBooksTableModel = (BooksTableModel) yourBooks.getModel();
-						yoursBooksTableModel.removeById(selectedBook.getId());
+						yoursBooksTableModel.removeBookById(selectedBook.getBookId());
 						clearSearch();
 					} catch (LibraryException exception) {
 						JOptionPane.showMessageDialog(LibraryWindow.this, exception.getMessage(), "ERROR",

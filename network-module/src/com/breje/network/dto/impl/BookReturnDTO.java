@@ -1,10 +1,12 @@
 package com.breje.network.dto.impl;
 
+import java.io.Serializable;
+
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.network.dto.IBookReturnDTO;
 
-public class BookReturnDTO implements IBookReturnDTO {
+public class BookReturnDTO implements IBookReturnDTO, Serializable {
 
 	private int bookId;
 	private String author;

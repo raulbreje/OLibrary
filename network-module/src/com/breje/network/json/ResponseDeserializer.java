@@ -8,8 +8,6 @@ import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.model.impl.BookImpl;
 import com.breje.model.impl.UserImpl;
-import com.breje.network.dto.IBookBorrowDTO;
-import com.breje.network.dto.IBookReturnDTO;
 import com.breje.network.dto.impl.BookBorrowDTO;
 import com.breje.network.dto.impl.BookReturnDTO;
 import com.breje.network.protocols.rpc.Response;
@@ -39,7 +37,8 @@ public class ResponseDeserializer implements JsonDeserializer<Response> {
 			break;
 		case GET_AVAILABLE_BOOKS:
 			List<BookImpl> availableBooks = new ArrayList<>();
-			jsonObject.get("data").getAsJsonArray().forEach(c -> availableBooks.add(arg2.deserialize(c, BookImpl.class)));
+			jsonObject.get("data").getAsJsonArray()
+					.forEach(c -> availableBooks.add(arg2.deserialize(c, BookImpl.class)));
 			response = new Response.Builder().type(ResponseType.GET_AVAILABLE_BOOKS).data(availableBooks).build();
 			break;
 		case GET_USER_BOOKS:
@@ -59,11 +58,11 @@ public class ResponseDeserializer implements JsonDeserializer<Response> {
 			response = new Response.Builder().type(ResponseType.ERROR).build();
 			break;
 		case BORROW_BOOK:
-			IBookBorrowDTO bookBorrowDTO = arg2.deserialize(jsonObject.get("data"), BookBorrowDTO.class);
+			BookBorrowDTO bookBorrowDTO = arg2.deserialize(jsonObject.get("data"), BookBorrowDTO.class);
 			response = new Response.Builder().type(ResponseType.BORROW_BOOK).data(bookBorrowDTO).build();
 			break;
 		case RETURN_BOOK:
-			IBookReturnDTO bookReturnDTO = arg2.deserialize(jsonObject.get("data"), BookReturnDTO.class);
+			BookReturnDTO bookReturnDTO = arg2.deserialize(jsonObject.get("data"), BookReturnDTO.class);
 			response = new Response.Builder().type(ResponseType.RETURN_BOOK).data(bookReturnDTO).build();
 			break;
 		}

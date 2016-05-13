@@ -12,10 +12,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class UserBookDTODeserializer implements JsonDeserializer<IUserBookDTO> {
+public class UserBookDTODeserializer implements JsonDeserializer<UserBookDTO> {
 
 	@Override
-	public IUserBookDTO deserialize(JsonElement arg0, Type arg1, JsonDeserializationContext arg2)
+	public UserBookDTO deserialize(JsonElement arg0, Type arg1, JsonDeserializationContext arg2)
 			throws JsonParseException {
 		LibraryLogger.logMessage("deserialize() ENTER", LibraryLoggerType.DEBUG, UserBookDTODeserializer.class);
 		JsonObject jsonObject = arg0.getAsJsonObject();

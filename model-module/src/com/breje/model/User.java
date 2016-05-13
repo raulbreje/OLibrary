@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public interface User extends Serializable {
 
-	int getId();
+	int getUserId();
 
-	void setId(int id);
+	void setBookId(int id);
 
 	String getUserName();
 

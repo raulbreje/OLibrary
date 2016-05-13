@@ -12,9 +12,9 @@ public interface Book extends Serializable {
 
 	void setTitle(String title);
 
-	int getId();
+	int getBookId();
 
-	void setId(int id);
+	void setBookId(int id);
 
 	int getAvailable();
 

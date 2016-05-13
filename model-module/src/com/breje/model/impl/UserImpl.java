@@ -15,14 +15,14 @@ public class UserImpl implements User {
 	 * 
 	 */
 	private static final long serialVersionUID = 2352858999767988246L;
-	private int id;
+	private int bookId;
 	private String userName;
 	private String passwd;
 	private String fullName;
 
-	public UserImpl(int id, String userName, String passwd, String fullName) {
+	public UserImpl(int bookId, String userName, String passwd, String fullName) {
 		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, UserImpl.class);
-		this.id = id;
+		this.bookId = bookId;
 		this.userName = userName;
 		this.passwd = passwd;
 		this.fullName = fullName;
@@ -35,10 +35,10 @@ public class UserImpl implements User {
 	 * @see com.breje.model.impl.User#getId()
 	 */
 	@Override
-	public int getId() {
+	public int getUserId() {
 		LibraryLogger.logMessage("getId() ENTER", LibraryLoggerType.DEBUG, UserImpl.class);
 		LibraryLogger.logMessage("getId() LEAVE", LibraryLoggerType.DEBUG, UserImpl.class);
-		return id;
+		return bookId;
 	}
 
 	/*
@@ -47,9 +47,9 @@ public class UserImpl implements User {
 	 * @see com.breje.model.impl.User#setId(int)
 	 */
 	@Override
-	public void setId(int id) {
+	public void setBookId(int id) {
 		LibraryLogger.logMessage("setId() ENTER", LibraryLoggerType.DEBUG, UserImpl.class);
-		this.id = id;
+		this.bookId = id;
 		LibraryLogger.logMessage("setId() LEAVE", LibraryLoggerType.DEBUG, UserImpl.class);
 	}
 
@@ -134,7 +134,7 @@ public class UserImpl implements User {
 	public String toString() {
 		LibraryLogger.logMessage("toString() ENTER", LibraryLoggerType.DEBUG, UserImpl.class);
 		LibraryLogger.logMessage("toString() LEAVE", LibraryLoggerType.DEBUG, UserImpl.class);
-		return "User [id=" + id + ", userName=" + userName + ", passwd=" + passwd + ", fullName=" + fullName + "]";
+		return "User [id=" + bookId + ", userName=" + userName + ", passwd=" + passwd + ", fullName=" + fullName + "]";
 	}
 
 }

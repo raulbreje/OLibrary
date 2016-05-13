@@ -24,27 +24,27 @@ public class UserTest {
 	@Test
 	public void testGetId() {
 		User user = new UserImpl(0, "user1", "password1", "User Name");
-		assertEquals(0, user.getId());
+		assertEquals(0, user.getUserId());
 		user = new UserImpl(3, "user1", "password1", "User Name");
-		assertEquals(3, user.getId());
+		assertEquals(3, user.getUserId());
 	}
 
 	@Test
 	public void testSetId() {
 		User user = new UserImpl(0, "user1", "password1", "User Name");
 		try {
-			user.setId(1);
+			user.setBookId(1);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		assertEquals(1, user.getId());
+		assertEquals(1, user.getUserId());
 		user = new UserImpl(3, "user1", "password1", "User Name");
 		try {
-			user.setId(2);
+			user.setBookId(2);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-		assertEquals(2, user.getId());
+		assertEquals(2, user.getUserId());
 	}
 
 	@Test

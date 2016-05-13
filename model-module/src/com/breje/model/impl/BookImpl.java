@@ -17,12 +17,12 @@ public class BookImpl implements Book {
 	private static final long serialVersionUID = 8555840175159679233L;
 	private String author = null;
 	private String title = null;
-	private int id = -1;
+	private int bookId = -1;
 	private int available = -1;
 
-	public BookImpl(int id, String author, String title, int available) {
+	public BookImpl(int bookId, String author, String title, int available) {
 		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, BookImpl.class);
-		this.id = id;
+		this.bookId = bookId;
 		this.author = author;
 		this.title = title;
 		this.available = available;
@@ -83,10 +83,10 @@ public class BookImpl implements Book {
 	 * @see com.breje.model.impl.Book#getId()
 	 */
 	@Override
-	public int getId() {
+	public int getBookId() {
 		LibraryLogger.logMessage("getId() ENTER", LibraryLoggerType.DEBUG, BookImpl.class);
 		LibraryLogger.logMessage("getId() LEAVE", LibraryLoggerType.DEBUG, BookImpl.class);
-		return id;
+		return bookId;
 	}
 
 	/*
@@ -95,9 +95,9 @@ public class BookImpl implements Book {
 	 * @see com.breje.model.impl.Book#setId(int)
 	 */
 	@Override
-	public void setId(int id) {
+	public void setBookId(int id) {
 		LibraryLogger.logMessage("setId() ENTER", LibraryLoggerType.DEBUG, BookImpl.class);
-		this.id = id;
+		this.bookId = id;
 		LibraryLogger.logMessage("setId() LEAVE", LibraryLoggerType.DEBUG, BookImpl.class);
 	}
 
@@ -134,7 +134,7 @@ public class BookImpl implements Book {
 	public String toString() {
 		LibraryLogger.logMessage("toString() ENTER", LibraryLoggerType.DEBUG, BookImpl.class);
 		LibraryLogger.logMessage("toString() LEAVE", LibraryLoggerType.DEBUG, BookImpl.class);
-		return "Book [author=" + author + ", title=" + title + ", id=" + id + ", available=" + available + "]";
+		return "Book [author=" + author + ", title=" + title + ", id=" + bookId + ", available=" + available + "]";
 	}
 
 }

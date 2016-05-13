@@ -32,8 +32,8 @@ public class BookRepositoryJDBC implements BookRepository {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
-				availableBooks
-						.add(new Book(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
+				availableBooks.add(
+						new BookImpl(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
 			}
 		} catch (SQLException e) {
 			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
@@ -52,7 +52,8 @@ public class BookRepositoryJDBC implements BookRepository {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
-				usersBooks.add(new Book(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
+				usersBooks.add(
+						new BookImpl(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
 			}
 		} catch (SQLException e) {
 			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
@@ -72,7 +73,8 @@ public class BookRepositoryJDBC implements BookRepository {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			ResultSet result = preparedStatement.executeQuery();
 			while (result.next()) {
-				foundBooks.add(new Book(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
+				foundBooks.add(
+						new BookImpl(result.getInt(1), result.getString(2), result.getString(3), result.getInt(4)));
 			}
 		} catch (SQLException e) {
 			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, BookRepositoryJDBC.class);
@@ -124,7 +126,7 @@ public class BookRepositoryJDBC implements BookRepository {
 			PreparedStatement selectReturnedBook = connection.prepareStatement(returnedBookSql);
 			ResultSet resultSet = selectReturnedBook.executeQuery();
 			if (resultSet.next()) {
-				returned = new Book(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
+				returned = new BookImpl(resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
 						resultSet.getInt(4));
 			}
 		} catch (SQLException e) {
