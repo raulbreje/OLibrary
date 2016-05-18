@@ -21,6 +21,7 @@ public class BookQuantityDTO implements Serializable, IBookQuantityDTO {
 	private int bookId;
 	private int newQuantity;
 
+	@Deprecated
 	public BookQuantityDTO(int bookId, int newQuantity) {
 		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 		this.bookId = bookId;
@@ -28,24 +29,28 @@ public class BookQuantityDTO implements Serializable, IBookQuantityDTO {
 		LibraryLogger.logMessage("constructor LEAVE", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 	}
 
+	@Deprecated
 	public int getNewQuantity() {
 		LibraryLogger.logMessage("getNewQuantity() ENTER", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 		LibraryLogger.logMessage("getNewQuantity() LEAVE", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 		return newQuantity;
 	}
 
+	@Deprecated
 	public void setNewQuantity(int newQuantity) {
 		LibraryLogger.logMessage("setNewQuantity() ENTER", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 		this.newQuantity = newQuantity;
 		LibraryLogger.logMessage("setNewQuantity() LEAVE", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 	}
 
+	@Deprecated
 	public int getBookId() {
 		LibraryLogger.logMessage("getBookId() ENTER", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 		LibraryLogger.logMessage("getBookId() LEAVE", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 		return bookId;
 	}
 
+	@Deprecated
 	public void setBookId(int bookId) {
 		LibraryLogger.logMessage("setBookId() ENTER", LibraryLoggerType.DEBUG, BookQuantityDTO.class);
 		this.bookId = bookId;

@@ -1,7 +1,5 @@
 package com.breje.network.dto.impl;
 
-import java.io.Serializable;
-
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.network.dto.IUserDTO;
@@ -11,7 +9,7 @@ import com.breje.network.dto.IUserDTO;
  * @author Raul Breje
  *
  */
-public class UserDTO implements Serializable, IUserDTO {
+public class UserDTO implements IUserDTO {
 
 	/**
 	 * 

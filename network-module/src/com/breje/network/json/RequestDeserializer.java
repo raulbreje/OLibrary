@@ -4,8 +4,8 @@ import java.lang.reflect.Type;
 
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
-import com.breje.network.dto.impl.UserBookDTO;
-import com.breje.network.dto.impl.UserDTO;
+import com.breje.network.dto.IUserBookDTO;
+import com.breje.network.dto.IUserDTO;
 import com.breje.network.protocols.rpc.Request;
 import com.breje.network.protocols.rpc.RequestType;
 import com.google.gson.JsonDeserializationContext;
@@ -25,7 +25,7 @@ public class RequestDeserializer implements JsonDeserializer<Request> {
 		switch (requestType) {
 		case LOGIN:
 			request = new Request.Builder().type(RequestType.LOGIN)
-					.data(arg2.deserialize(jsonObject.get("data"), UserDTO.class)).build();
+					.data(arg2.deserialize(jsonObject.get("data"), IUserDTO.class)).build();
 			break;
 		case LOGOUT:
 			request = new Request.Builder().type(RequestType.LOGOUT).data(jsonObject.get("data").getAsInt()).build();
@@ -43,11 +43,11 @@ public class RequestDeserializer implements JsonDeserializer<Request> {
 			break;
 		case BORROW_BOOK:
 			request = new Request.Builder().type(RequestType.BORROW_BOOK)
-					.data(arg2.deserialize(jsonObject.get("data"), UserBookDTO.class)).build();
+					.data(arg2.deserialize(jsonObject.get("data"), IUserBookDTO.class)).build();
 			break;
 		case RETURN_BOOK:
 			request = new Request.Builder().type(RequestType.RETURN_BOOK)
-					.data(arg2.deserialize(jsonObject.get("data"), UserBookDTO.class)).build();
+					.data(arg2.deserialize(jsonObject.get("data"), IUserBookDTO.class)).build();
 			break;
 		}
 		LibraryLogger.logMessage("deserialize() LEAVE", LibraryLoggerType.DEBUG, RequestDeserializer.class);

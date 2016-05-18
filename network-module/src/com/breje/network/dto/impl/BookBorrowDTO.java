@@ -1,13 +1,15 @@
 package com.breje.network.dto.impl;
 
-import java.io.Serializable;
-
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.network.dto.IBookBorrowDTO;
 
-public class BookBorrowDTO implements Serializable, IBookBorrowDTO {
+public class BookBorrowDTO implements IBookBorrowDTO {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2337205588992016080L;
 	private int bookId;
 	private int quantity;
 	private boolean isCurrentUser;

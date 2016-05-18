@@ -1,6 +1,8 @@
 package com.breje.network.dto;
 
-public interface IUserDTO {
+import java.io.Serializable;
+
+public interface IUserDTO extends Serializable {
 	String getUserName();
 
 	void setUserName(String userName);

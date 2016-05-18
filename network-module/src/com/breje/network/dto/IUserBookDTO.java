@@ -1,6 +1,8 @@
 package com.breje.network.dto;
 
-public interface IUserBookDTO {
+import java.io.Serializable;
+
+public interface IUserBookDTO extends Serializable {
 	int getUserId();
 
 	void setUserId(int userId);

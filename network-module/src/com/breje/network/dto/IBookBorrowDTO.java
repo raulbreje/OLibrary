@@ -1,6 +1,8 @@
 package com.breje.network.dto;
 
-public interface IBookBorrowDTO {
+import java.io.Serializable;
+
+public interface IBookBorrowDTO extends Serializable {
 	int getBookId();
 
 	void setBookId(int bookId);
