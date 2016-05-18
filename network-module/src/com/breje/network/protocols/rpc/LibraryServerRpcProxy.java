@@ -197,6 +197,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 
 	private void sendJsonRequest(Request request) throws LibraryException {
 		LibraryLogger.logMessage("sendRequest() ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
+//		initializeConnection();
 		Gson gson = new Gson();
 		String json = gson.toJson(request);
 		LibraryLogger.logMessage("Request json: " + json, LibraryLoggerType.INFO, LibraryServerRpcProxy.class);
