@@ -33,7 +33,7 @@ public class Request implements Serializable {
 	public String toString() {
 		LibraryLogger.logMessage("toString() ENTER", LibraryLoggerType.DEBUG, Request.class);
 		LibraryLogger.logMessage("toString() LEAVE", LibraryLoggerType.DEBUG, Request.class);
-		return "Request{" + "type='" + type + '\'' + ", data='" + data + '\'' + '}';
+		return "Request{" + "type='" + type + "\'" + ", data='" + data + "\'" + "}";
 	}
 
 	public static class Builder {

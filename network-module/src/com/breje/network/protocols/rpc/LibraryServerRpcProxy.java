@@ -16,9 +16,10 @@ import com.breje.common.logging.LibraryLoggerType;
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
 import com.breje.model.User;
+import com.breje.network.dto.IBookBorrowDTO;
+import com.breje.network.dto.IBookReturnDTO;
 import com.breje.network.dto.IUserBookDTO;
-import com.breje.network.dto.impl.BookBorrowDTO;
-import com.breje.network.dto.impl.BookReturnDTO;
+import com.breje.network.dto.IUserDTO;
 import com.breje.network.dto.impl.UserBookDTO;
 import com.breje.network.dto.impl.UserDTO;
 import com.breje.network.json.ResponseDeserializer;
@@ -34,7 +35,10 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 
 	private ILibraryClient client;
 
+	@SuppressWarnings("unused")
+	@Deprecated
 	private ObjectInputStream input;
+	@Deprecated
 	private ObjectOutputStream output;
 
 	private BufferedReader jsonInput;
@@ -55,10 +59,9 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 	public User login(String userName, String password, ILibraryClient client) throws LibraryException {
 		LibraryLogger.logMessage("login() ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		initializeConnection();
-		UserDTO userDTO = new UserDTO(userName, password);
+		IUserDTO userDTO = new UserDTO(userName, password);
 		Request request = new Request.Builder().type(RequestType.LOGIN).data(userDTO).build();
 		sendJsonRequest(request);
-		// sendRequest(request);
 		Response response = readResponse();
 		if (response.type() == ResponseType.ERROR) {
 			String errorMessage = response.data().toString();
@@ -66,7 +69,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 			throw new LibraryException(errorMessage);
 		}
 		User user = (User) response.data();
-		if (user != null && response.type() == ResponseType.OK) {
+		if (user != null && response.type() == ResponseType.LOGIN_SUCCESS) {
 			this.client = client;
 		}
 		LibraryLogger.logMessage("login() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
@@ -76,7 +79,6 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 	public void logout(int userId, ILibraryClient client) throws LibraryException {
 		LibraryLogger.logMessage("logout() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		Request request = new Request.Builder().type(RequestType.LOGOUT).data(userId).build();
-		// sendRequest(request);
 		sendJsonRequest(request);
 		Response response = readResponse();
 		closeConnection();
@@ -93,7 +95,6 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		LibraryLogger.logMessage("getAvailableBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		Request request = new Request.Builder().type(RequestType.GET_AVAILABLE_BOOKS).build();
 		sendJsonRequest(request);
-		// sendRequest(request);
 		Response response = readResponse();
 		if (response.type() == ResponseType.ERROR) {
 			String errorMessage = response.data().toString();
@@ -110,7 +111,6 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		LibraryLogger.logMessage("getUserBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		Request request = new Request.Builder().type(RequestType.GET_USER_BOOKS).data(userId).build();
 		sendJsonRequest(request);
-		// sendRequest(request);
 		Response response = readResponse();
 		if (response.type() == ResponseType.ERROR) {
 			String errorMessage = response.data().toString();
@@ -127,7 +127,6 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		LibraryLogger.logMessage("searchBooks() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		Request request = new Request.Builder().type(RequestType.SEARCH_BOOKS).data(key).build();
 		sendJsonRequest(request);
-		// sendRequest(request);
 		Response response = readResponse();
 		if (response.type() == ResponseType.ERROR) {
 			String errorMessage = response.data().toString();
@@ -141,9 +140,8 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 	@Override
 	public void borrowBook(int userId, int bookId) throws LibraryException {
 		LibraryLogger.logMessage("borrowBook() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
-		UserBookDTO userBookDTO = new UserBookDTO(userId, bookId);
+		IUserBookDTO userBookDTO = new UserBookDTO(userId, bookId);
 		Request request = new Request.Builder().type(RequestType.BORROW_BOOK).data(userBookDTO).build();
-		// sendRequest(request);
 		sendJsonRequest(request);
 		Response response = readResponse();
 		if (response.type() == ResponseType.ERROR) {
@@ -156,9 +154,8 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 	@Override
 	public void returnBook(int userId, int bookId) throws LibraryException {
 		LibraryLogger.logMessage("returnBook() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
-		UserBookDTO userBookDTO = new UserBookDTO(userId, bookId);
+		IUserBookDTO userBookDTO = new UserBookDTO(userId, bookId);
 		Request request = new Request.Builder().type(RequestType.RETURN_BOOK).data(userBookDTO).build();
-		// sendRequest(request);
 		sendJsonRequest(request);
 		Response response = readResponse();
 		if (response.type() == ResponseType.ERROR) {
@@ -172,10 +169,8 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		LibraryLogger.logMessage("closeConnection() ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		finished = true;
 		try {
-			input.close();
 			jsonInput.close();
 			jsonOutput.close();
-			output.close();
 			connection.close();
 			client = null;
 			LibraryLogger.logMessage("Connection has been closed with success.", LibraryLoggerType.INFO,
@@ -186,6 +181,8 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		LibraryLogger.logMessage("closeConnection() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 	}
 
+	@SuppressWarnings("unused")
+	@Deprecated
 	private void sendRequest(Request request) throws LibraryException {
 		LibraryLogger.logMessage("sendRequest() ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		try {
@@ -202,7 +199,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		LibraryLogger.logMessage("sendRequest() ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		Gson gson = new Gson();
 		String json = gson.toJson(request);
-		System.out.println("Request json " + json);
+		LibraryLogger.logMessage("Request json: " + json, LibraryLoggerType.INFO, LibraryServerRpcProxy.class);
 		jsonOutput.println(json);
 		LibraryLogger.logMessage("sendRequest() LEAVE", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 	}
@@ -224,14 +221,9 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		LibraryLogger.logMessage("initializeConnection() ENTER", LibraryLoggerType.DEBUG, LibraryServerRpcProxy.class);
 		try {
 			connection = new Socket(host, port);
-
 			jsonOutput = new PrintWriter(connection.getOutputStream(), true);
 			jsonOutput.flush();
 			jsonInput = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-			output = new ObjectOutputStream(connection.getOutputStream());
-			output.flush();
-			input = new ObjectInputStream(connection.getInputStream());
 			finished = false;
 			LibraryLogger.logMessage("Connection has been initialized with success.", LibraryLoggerType.INFO,
 					LibraryServerRpcProxy.class);
@@ -254,7 +246,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 	private void handleUpdate(Response response) {
 		if (response.type() == ResponseType.BORROW_BOOK) {
 			try {
-				BookBorrowDTO bookBorrowedDTO = (BookBorrowDTO) response.data();
+				IBookBorrowDTO bookBorrowedDTO = (IBookBorrowDTO) response.data();
 				client.bookBorrowed(bookBorrowedDTO.getBookId(), bookBorrowedDTO.getQuantity(),
 						bookBorrowedDTO.isByCurrentUser());
 			} catch (LibraryException exception) {
@@ -263,7 +255,7 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 		}
 		if (response.type() == ResponseType.RETURN_BOOK) {
 			try {
-				BookReturnDTO bookReturnedDTO = (BookReturnDTO) response.data();
+				IBookReturnDTO bookReturnedDTO = (IBookReturnDTO) response.data();
 				client.bookReturned(bookReturnedDTO.getBookId(), bookReturnedDTO.getAuthor(),
 						bookReturnedDTO.getTitle(), bookReturnedDTO.isByCurrentUser());
 			} catch (LibraryException exception) {
@@ -315,7 +307,8 @@ public class LibraryServerRpcProxy implements ILibraryServer {
 						gsonBuilder.registerTypeAdapter(Response.class, new ResponseDeserializer());
 						Gson gson = gsonBuilder.create();
 						Response response = gson.fromJson(responseJson, Response.class);
-						System.out.println("Response received " + response);
+						LibraryLogger.logMessage("Response received: " + response, LibraryLoggerType.INFO,
+								LibraryServerRpcProxy.class);
 						if (isUpdate(response)) {
 							handleUpdate(response);
 						} else {

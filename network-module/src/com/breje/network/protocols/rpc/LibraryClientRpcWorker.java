@@ -14,14 +14,16 @@ import com.breje.common.logging.LibraryLoggerType;
 import com.breje.exceptions.LibraryException;
 import com.breje.model.Book;
 import com.breje.model.User;
+import com.breje.network.dto.IBookBorrowDTO;
 import com.breje.network.dto.IBookDTO;
 import com.breje.network.dto.IBookQuantityDTO;
+import com.breje.network.dto.IBookReturnDTO;
+import com.breje.network.dto.IUserBookDTO;
+import com.breje.network.dto.IUserDTO;
 import com.breje.network.dto.impl.BookBorrowDTO;
 import com.breje.network.dto.impl.BookDTO;
 import com.breje.network.dto.impl.BookQuantityDTO;
 import com.breje.network.dto.impl.BookReturnDTO;
-import com.breje.network.dto.impl.UserBookDTO;
-import com.breje.network.dto.impl.UserDTO;
 import com.breje.network.json.RequestDeserializer;
 import com.breje.services.ILibraryClient;
 import com.breje.services.ILibraryServer;
@@ -31,6 +33,7 @@ import com.google.gson.GsonBuilder;
 /**
  * Created by grigo on 12/15/15.
  */
+@SuppressWarnings("deprecation")
 public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 
 	private ILibraryServer server;
@@ -39,6 +42,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 	private BufferedReader jsonInput;
 	private PrintWriter jsonOutput;
 
+	@SuppressWarnings("unused")
 	@Deprecated
 	private ObjectInputStream input;
 	@Deprecated
@@ -53,10 +57,6 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 			jsonOutput = new PrintWriter(connection.getOutputStream(), true);
 			jsonOutput.flush();
 			jsonInput = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-			output = new ObjectOutputStream(connection.getOutputStream());
-			output.flush();
-			input = new ObjectInputStream(connection.getInputStream());
 			connected = true;
 			LibraryLogger.logMessage("Connection has been estabilished with the server.", LibraryLoggerType.INFO,
 					LibraryClientRpcWorker.class);
@@ -75,10 +75,11 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 					gsonBuilder.registerTypeAdapter(Request.class, new RequestDeserializer());
 					Gson gson = gsonBuilder.create();
 					Request request = gson.fromJson(requestJson, Request.class);
-					System.out.println("Request received " + request);
+					LibraryLogger.logMessage("Request receiver: " + request, LibraryLoggerType.INFO,
+							LibraryClientRpcWorker.class);
 					Response response = handleRequest(request);
 					if (response != null) {
-						sendResponse(response);
+						sendJsonResponse(response);
 					}
 				}
 			} catch (IOException e) {
@@ -91,13 +92,11 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 			}
 		}
 		try {
-			input.close();
-			output.close();
 			jsonInput.close();
 			jsonOutput.close();
 			connection.close();
 		} catch (IOException e) {
-			System.out.println("Error " + e);
+			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
 		}
 	}
 
@@ -142,12 +141,39 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 	// }
 
 	@Override
+	public void bookBorrowed(int bookId, int quantity, boolean isCurrentUser) throws LibraryException {
+		LibraryLogger.logMessage("bookBorrowed() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
+		IBookBorrowDTO bookBorrowDTO = new BookBorrowDTO(bookId, quantity, isCurrentUser);
+		Response response = new Response.Builder().type(ResponseType.BORROW_BOOK).data(bookBorrowDTO).build();
+		try {
+			sendJsonResponse(response);
+		} catch (IOException e) {
+			throw new LibraryException("Sending error: " + e);
+		}
+		LibraryLogger.logMessage("bookBorrowed() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
+	}
+
+	@Override
+	public void bookReturned(int bookId, String author, String title, boolean isCurrentUser) throws LibraryException {
+		LibraryLogger.logMessage("bookReturned() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
+		IBookReturnDTO bookReturnedDTO = new BookReturnDTO(bookId, author, title, isCurrentUser);
+		Response response = new Response.Builder().type(ResponseType.RETURN_BOOK).data(bookReturnedDTO).build();
+		try {
+			sendJsonResponse(response);
+		} catch (IOException e) {
+			throw new LibraryException("Sending error: " + e);
+		}
+		LibraryLogger.logMessage("bookReturned() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
+	}
+
+	@Deprecated
+	@Override
 	public void bookUpdated(int bookId, int newQuantity) throws LibraryException {
 		LibraryLogger.logMessage("bookUpdated() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		IBookQuantityDTO bookQuantityDTO = new BookQuantityDTO(bookId, newQuantity);
 		Response response = new Response.Builder().type(ResponseType.BORROW_BOOK).data(bookQuantityDTO).build();
 		try {
-			sendResponse(response);
+			sendJsonResponse(response);
 		} catch (IOException e) {
 			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
 			throw new LibraryException("Error occurs when trying to send response. Contact your administrator.");
@@ -155,13 +181,14 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		LibraryLogger.logMessage("bookUpdated() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 	}
 
+	@Deprecated
 	@Override
 	public void bookReturned(int bookId, String author, String title) throws LibraryException {
 		LibraryLogger.logMessage("bookReturned() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		IBookDTO bookDTO = new BookDTO(bookId, author, title);
 		Response response = new Response.Builder().type(ResponseType.RETURN_BOOK).data(bookDTO).build();
 		try {
-			sendResponse(response);
+			sendJsonResponse(response);
 		} catch (IOException e) {
 			LibraryLogger.logMessage(e, LibraryLoggerType.ERROR, LibraryClientRpcWorker.class);
 			throw new LibraryException("Error occurs when trying to send response. Contact your administrator.");
@@ -175,10 +202,10 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		if (request.type() == RequestType.LOGIN) {
 			LibraryLogger.logMessage("Receiving login request...", LibraryLoggerType.INFO,
 					LibraryClientRpcWorker.class);
-			UserDTO userDTO = (UserDTO) request.data();
+			IUserDTO userDTO = (IUserDTO) request.data();
 			try {
 				User user = server.login(userDTO.getUserName(), userDTO.getPassword(), this);
-				return new Response.Builder().type(ResponseType.OK).data(user).build();
+				return new Response.Builder().type(ResponseType.LOGIN_SUCCESS).data(user).build();
 			} catch (LibraryException e) {
 				connected = false;
 				return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
@@ -191,7 +218,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 			try {
 				server.logout(userId, this);
 				connected = false;
-				return new Response.Builder().type(ResponseType.OK).build();
+				return new Response.Builder().type(ResponseType.LOGOUT_SUCCESS).build();
 			} catch (LibraryException e) {
 				return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
 			}
@@ -224,7 +251,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		}
 		if (request.type() == RequestType.BORROW_BOOK) {
 			try {
-				UserBookDTO userBookDTO = (UserBookDTO) request.data();
+				IUserBookDTO userBookDTO = (IUserBookDTO) request.data();
 				server.borrowBook(userBookDTO.getUserId(), userBookDTO.getBookId());
 				return new Response.Builder().type(ResponseType.OK).build();
 			} catch (LibraryException e) {
@@ -233,7 +260,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		}
 		if (request.type() == RequestType.RETURN_BOOK) {
 			try {
-				UserBookDTO userBookDTO = (UserBookDTO) request.data();
+				IUserBookDTO userBookDTO = (IUserBookDTO) request.data();
 				server.returnBook(userBookDTO.getUserId(), userBookDTO.getBookId());
 				return new Response.Builder().type(ResponseType.OK).build();
 			} catch (LibraryException e) {
@@ -244,7 +271,7 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		return response;
 	}
 
-	private void sendResponse(Response response) throws IOException {
+	private void sendJsonResponse(Response response) throws IOException {
 		LibraryLogger.logMessage("sendResponse() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 		LibraryLogger.logMessage("Sending response...", LibraryLoggerType.INFO, LibraryClientRpcWorker.class);
 		Gson gson = new Gson();
@@ -256,40 +283,16 @@ public class LibraryClientRpcWorker implements Runnable, ILibraryClient {
 		LibraryLogger.logMessage("sendResponse() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 	}
 
-	// private void sendResponse(Response response) throws IOException {
-	// LibraryLogger.logMessage("sendResponse() ENTER", LibraryLoggerType.DEBUG,
-	// LibraryClientRpcWorker.class);
-	// LibraryLogger.logMessage("Sending response...", LibraryLoggerType.INFO,
-	// LibraryClientRpcWorker.class);
-	// output.writeObject(response);
-	// output.flush();
-	// LibraryLogger.logMessage("Response has been sent.\n" + response,
-	// LibraryLoggerType.INFO,
-	// LibraryClientRpcWorker.class);
-	// LibraryLogger.logMessage("sendResponse() LEAVE", LibraryLoggerType.DEBUG,
-	// LibraryClientRpcWorker.class);
-	// }
-
-	@Override
-	public void bookBorrowed(int bookId, int quantity, boolean isCurrentUser) throws LibraryException {
-		BookBorrowDTO bookBorrowDTO = new BookBorrowDTO(bookId, quantity, isCurrentUser);
-		Response response = new Response.Builder().type(ResponseType.BORROW_BOOK).data(bookBorrowDTO).build();
-		try {
-			sendResponse(response);
-		} catch (IOException e) {
-			throw new LibraryException("Sending error: " + e);
-		}
-	}
-
-	@Override
-	public void bookReturned(int bookId, String author, String title, boolean isCurrentUser) throws LibraryException {
-		BookReturnDTO bookReturnedDTO = new BookReturnDTO(bookId, author, title, isCurrentUser);
-		Response response = new Response.Builder().type(ResponseType.RETURN_BOOK).data(bookReturnedDTO).build();
-		try {
-			sendResponse(response);
-		} catch (IOException e) {
-			throw new LibraryException("Sending error: " + e);
-		}
+	@SuppressWarnings("unused")
+	@Deprecated
+	private void sendResponse(Response response) throws IOException {
+		LibraryLogger.logMessage("sendResponse() ENTER", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
+		LibraryLogger.logMessage("Sending response...", LibraryLoggerType.INFO, LibraryClientRpcWorker.class);
+		output.writeObject(response);
+		output.flush();
+		LibraryLogger.logMessage("Response has been sent.\n" + response, LibraryLoggerType.INFO,
+				LibraryClientRpcWorker.class);
+		LibraryLogger.logMessage("sendResponse() LEAVE", LibraryLoggerType.DEBUG, LibraryClientRpcWorker.class);
 	}
 
 }

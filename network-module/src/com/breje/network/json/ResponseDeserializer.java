@@ -7,9 +7,12 @@ import java.util.List;
 import com.breje.common.logging.LibraryLogger;
 import com.breje.common.logging.LibraryLoggerType;
 import com.breje.model.Book;
-import com.breje.model.User;
+import com.breje.model.impl.BookImpl;
+import com.breje.model.impl.UserImpl;
 import com.breje.network.dto.IBookBorrowDTO;
 import com.breje.network.dto.IBookReturnDTO;
+import com.breje.network.dto.impl.BookBorrowDTO;
+import com.breje.network.dto.impl.BookReturnDTO;
 import com.breje.network.protocols.rpc.Response;
 import com.breje.network.protocols.rpc.ResponseType;
 import com.google.gson.JsonDeserializationContext;
@@ -30,24 +33,25 @@ public class ResponseDeserializer implements JsonDeserializer<Response> {
 		switch (responseType) {
 		case LOGIN_SUCCESS:
 			response = new Response.Builder().type(ResponseType.LOGIN_SUCCESS)
-					.data(arg2.deserialize(jsonObject.get("data"), User.class)).build();
+					.data(arg2.deserialize(jsonObject.get("data"), UserImpl.class)).build();
 			break;
 		case LOGOUT_SUCCESS:
 			response = new Response.Builder().type(ResponseType.LOGOUT_SUCCESS).build();
 			break;
 		case GET_AVAILABLE_BOOKS:
 			List<Book> availableBooks = new ArrayList<>();
-			jsonObject.get("data").getAsJsonArray().forEach(c -> availableBooks.add(arg2.deserialize(c, Book.class)));
+			jsonObject.get("data").getAsJsonArray()
+					.forEach(c -> availableBooks.add(arg2.deserialize(c, BookImpl.class)));
 			response = new Response.Builder().type(ResponseType.GET_AVAILABLE_BOOKS).data(availableBooks).build();
 			break;
 		case GET_USER_BOOKS:
 			List<Book> userBooks = new ArrayList<>();
-			jsonObject.get("data").getAsJsonArray().forEach(c -> userBooks.add(arg2.deserialize(c, Book.class)));
+			jsonObject.get("data").getAsJsonArray().forEach(c -> userBooks.add(arg2.deserialize(c, BookImpl.class)));
 			response = new Response.Builder().type(ResponseType.GET_USER_BOOKS).data(userBooks).build();
 			break;
 		case SEARCH_BOOKS:
 			List<Book> foundBooks = new ArrayList<>();
-			jsonObject.get("data").getAsJsonArray().forEach(c -> foundBooks.add(arg2.deserialize(c, Book.class)));
+			jsonObject.get("data").getAsJsonArray().forEach(c -> foundBooks.add(arg2.deserialize(c, BookImpl.class)));
 			response = new Response.Builder().type(ResponseType.SEARCH_BOOKS).data(foundBooks).build();
 			break;
 		case OK:
@@ -57,11 +61,11 @@ public class ResponseDeserializer implements JsonDeserializer<Response> {
 			response = new Response.Builder().type(ResponseType.ERROR).build();
 			break;
 		case BORROW_BOOK:
-			IBookBorrowDTO bookBorrowDTO = arg2.deserialize(jsonObject.get("data"), IBookBorrowDTO.class);
+			IBookBorrowDTO bookBorrowDTO = arg2.deserialize(jsonObject.get("data"), BookBorrowDTO.class);
 			response = new Response.Builder().type(ResponseType.BORROW_BOOK).data(bookBorrowDTO).build();
 			break;
 		case RETURN_BOOK:
-			IBookReturnDTO bookReturnDTO = arg2.deserialize(jsonObject.get("data"), IBookReturnDTO.class);
+			IBookReturnDTO bookReturnDTO = arg2.deserialize(jsonObject.get("data"), BookReturnDTO.class);
 			response = new Response.Builder().type(ResponseType.RETURN_BOOK).data(bookReturnDTO).build();
 			break;
 		}

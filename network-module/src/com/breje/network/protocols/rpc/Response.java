@@ -45,7 +45,7 @@ public class Response implements Serializable {
 	public String toString() {
 		LibraryLogger.logMessage("toString() ENTER", LibraryLoggerType.DEBUG, Response.class);
 		LibraryLogger.logMessage("toString() LEAVE", LibraryLoggerType.DEBUG, Response.class);
-		return "Response{" + "type='" + type + '\'' + ", data='" + data + '\'' + '}';
+		return "Response{" + "type='" + type + "\'" + ", data='" + data + "\'" + "}";
 	}
 
 	public static class Builder {

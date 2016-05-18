@@ -28,7 +28,7 @@ public class LibraryClientController implements ILibraryClient {
 		User user = libraryServer.login(userName, password, this);
 		this.user = user;
 		loadAvailableBooks();
-		List<Book> userBooks = libraryServer.getUserBooks(user.getUserId());
+		List<Book> userBooks = libraryServer.getUserBooks(this.user.getUserId());
 		yourBooksTableModel.setBooks(userBooks);
 	}
 

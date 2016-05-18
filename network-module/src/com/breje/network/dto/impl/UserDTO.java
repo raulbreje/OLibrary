@@ -18,6 +18,10 @@ public class UserDTO implements IUserDTO {
 	private String userName;
 	private String password;
 
+	public UserDTO(){
+		
+	}
+	
 	public UserDTO(String userName, String password) {
 		LibraryLogger.logMessage("constructor ENTER", LibraryLoggerType.DEBUG, UserDTO.class);
 		this.userName = userName;
