@@ -83,26 +83,4 @@ public class LibraryServerImpl implements ILibraryServer {
 		}
 	}
 
-	//
-	// @Override
-	// public void borrowBook(int userId, int bookId) throws LibraryException {
-	// int newQuantity = bookRepository.borrowBook(userId, bookId);
-	// for (ILibraryClient libraryClient : loggedClients.values()) {
-	// libraryClient.bookUpdated(bookId, newQuantity);
-	// }
-	// }
-	//
-	// @Override
-	// public void returnBook(int userId, int bookId) throws LibraryException {
-	// Book returned = bookRepository.returnBook(userId, bookId);
-	// for (ILibraryClient libraryClient : loggedClients.values()) {
-	// libraryClient.bookReturned(returned.getBookId(), returned.getAuthor(),
-	// returned.getTitle());
-	// }
-	// }
-
-	@SuppressWarnings("unused")
-	private boolean isLogged(User u) {
-		return loggedClients.get(u.getUserName()) != null;
-	}
 }

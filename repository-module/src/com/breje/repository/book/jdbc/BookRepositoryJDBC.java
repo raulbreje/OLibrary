@@ -121,8 +121,6 @@ public class BookRepositoryJDBC implements BookRepository {
 			PreparedStatement returnStatement = connection.prepareStatement(returnBookSql);
 			returnStatement.executeUpdate();
 			String returnedBookSql = SQLHelper.SELECT_AVAILABLE_BOOKS;
-			// String returnedBookSql = SQLHelper.GET_BOOK_SQL.format(new
-			// Object[] { bookId });
 			PreparedStatement selectReturnedBook = connection.prepareStatement(returnedBookSql);
 			ResultSet resultSet = selectReturnedBook.executeQuery();
 			if (resultSet.next()) {
